@@ -26,92 +26,86 @@ size_t ULListStr::size() const
 
 // WRITE YOUR CODE HERE
 void ULListStr::push_back(const std::string& val) {
-  if (!tail_ || tail_ -> last == ARRSIZE) { // no tail / node is full
-    Item* newItem = new Item();
-    if (!tail_) {
-      head_ = newItem;
-      tail_ = newItem;
-    } 
-    else {
-      tail_ -> next = newItem;
-      newItem -> prev = tail_;
-      tail_ = newItem;
+    if (!tail_) { // If list is empty, create first node
+        tail_ = new Item();
+        head_ = tail_;
     }
-  }
-  
-  tail_ -> val[tail_ -> last] = val;
-  tail_ -> last++;
-  size_++;
+    
+    if (tail_->last < ARRSIZE) { // Space available in current tail node
+        tail_->val[tail_->last] = val;
+        tail_->last++;
+    } else { // No space, create a new node
+        Item* newNode = new Item();
+        newNode->val[0] = val;
+        newNode->last = 1;
+        newNode->prev = tail_;
+        tail_->next = newNode;
+        tail_ = newNode;
+    }
+    size_++;
 }
 
 // COMPLETE
 void ULListStr::pop_back() {
-  if (!tail_) return; // Nothing to remove
+    if (!tail_) return; // List is empty
 
-  tail_->last--;
+    tail_->last--; // Remove last element
 
-  if (tail_->first == tail_->last) // If item is empty, remove it
-  {
-    Item* temp = tail_;
-    if (tail_ == head_) // If only one node exists
-    {
-      head_ = NULL;
-      tail_ = NULL;
+    if (tail_->first == tail_->last) { // If node is now empty, delete it
+        Item* temp = tail_;
+        tail_ = tail_->prev;
+
+        if (tail_) {
+            tail_->next = nullptr;
+        } else {
+            head_ = nullptr; // List is now empty
+        }
+
+        delete temp;
     }
-    else
-    {
-      tail_ = tail_->prev;
-      tail_->next = NULL;
-    }
-    delete temp;
-  }
-  size_--;
+    size_--;
 }
 
 void ULListStr::push_front(const std::string& val) {
-  if (!head_ || head_->first == 0) // No head or first item is full at the front
-  {
-    Item* newItem = new Item();
-    newItem->first = ARRSIZE; // Start from last position
-    if (!head_) // First node in list
-    {
-      head_ = newItem;
-      tail_ = newItem;
+    if (!head_) { // If list is empty, create first node
+        head_ = new Item();
+        tail_ = head_;
+        head_->val[0] = val;
+        head_->first = 0;
+        head_->last = 1;
+    } else if (head_->first > 0) { // Space available before first element
+        head_->first--;
+        head_->val[head_->first] = val;
+    } else { // No space, create new head node
+        Item* newNode = new Item();
+        newNode->last = ARRSIZE;
+        newNode->first = ARRSIZE - 1;
+        newNode->val[newNode->first] = val;
+        newNode->next = head_;
+        head_->prev = newNode;
+        head_ = newNode;
     }
-    else
-    {
-      newItem->next = head_;
-      head_->prev = newItem;
-      head_ = newItem;
-    }
-  }
-
-  head_->first--;
-  head_->val[head_->first] = val;
-  size_++;
+    size_++;
 }
 
 void ULListStr::pop_front() {
-  if (!head_) return; // Nothing to remove
+    if (!head_) return; // List is empty
 
-  head_->first++;
+    head_->first++; // Remove first element
 
-  if (head_->first == head_->last) // If item is empty, remove it
-  {
-    Item* temp = head_;
-    if (head_ == tail_) // If only one node exists
-    {
-      head_ = NULL;
-      tail_ = NULL;
+    if (head_->first == head_->last) { // If node is now empty, delete it
+        Item* temp = head_;
+        head_ = head_->next;
+
+        if (head_) {
+            head_->prev = nullptr;
+        } else {
+            tail_ = nullptr; // List is now empty
+        }
+
+        delete temp;
     }
-    else
-    {
-      head_ = head_->next;
-      head_->prev = NULL;
-    }
-    delete temp;
-  }
-  size_--;
+    size_--;
 }
 
 std::string const& ULListStr::back() const {
