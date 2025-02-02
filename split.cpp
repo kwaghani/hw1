@@ -16,8 +16,24 @@ the function below should be the only one in this file.
 
 void split(Node*& in, Node*& odds, Node*& evens)
 {
-  /* Add code here */
-// WRITE YOUR CODE HERE
+  if (!in) { // base case if list is empty
+    return;
+  }
+
+  Node* nextNode = in->next;
+
+  if (in->value % 2 == 0) { // even number
+    in->next = evens;
+    evens = in;
+  }
+  else { // odd number
+    in->next = odds;
+    odds = in;
+  }
+
+  in = nullptr;
+
+  split(nextNode, odds, evens);
 }
 
 /* If you needed a helper function, write it here */
